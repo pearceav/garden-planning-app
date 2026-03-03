@@ -43,20 +43,51 @@
 	}
 
 	function parseSizeFt(size: string): { widthFt: number; heightFt: number } {
-		const match = size.match(/(\d+(?:\.\d+)?)\s*(?:ft)?\s*x\s*(\d+(?:\.\d+)?)\s*(?:ft)?/i);
-		if (match) {
-			return { widthFt: parseFloat(match[1]), heightFt: parseFloat(match[2]) };
+		const dimMatch = size.match(/(\d+(?:\.\d+)?)\s*(?:ft)?\s*x\s*(\d+(?:\.\d+)?)\s*(?:ft)?/i);
+		if (dimMatch) {
+			return { widthFt: parseFloat(dimMatch[1]), heightFt: parseFloat(dimMatch[2]) };
+		}
+		const diaMatch = size.match(/(\d+(?:\.\d+)?)\s*ft\s*diameter/i);
+		if (diaMatch) {
+			const d = parseFloat(diaMatch[1]);
+			return { widthFt: d, heightFt: d };
 		}
 		return { widthFt: 3, heightFt: 3 };
 	}
 
+	function isIndividualContainers(group: PlantGroup): boolean {
+		const t = group.container.type.toLowerCase();
+		return t.includes('barrel') || t.includes('terra cotta') || t.includes('plastic pot');
+	}
+
+	function isCircularBed(group: PlantGroup): boolean {
+		if (isIndividualContainers(group)) return true;
+		const t = group.container.type.toLowerCase();
+		const { widthFt, heightFt } = parseSizeFt(group.container.size);
+		return t.includes('metal') && widthFt === heightFt && widthFt <= 2;
+	}
+
+	const MIN_CELL = 55;
+
 	function bedLayout(group: PlantGroup) {
 		const { widthFt, heightFt } = parseSizeFt(group.container.size);
-		const width = widthFt * PX_PER_FT;
-		const height = heightFt * PX_PER_FT;
 		const plantCount = group.plants.length;
-		const cols = Math.ceil(Math.sqrt(plantCount * (width / height)));
+
+		if (isIndividualContainers(group)) {
+			const containerR = 40;
+			const gap = 20;
+			const width = plantCount * containerR * 2 + (plantCount - 1) * gap + BED_PAD * 2;
+			const height = containerR * 2 + BED_PAD * 2;
+			return { cols: plantCount, rows: 1, width, height, cellW: containerR * 2 + gap, cellH: height };
+		}
+
+		const baseW = widthFt * PX_PER_FT;
+		const baseH = heightFt * PX_PER_FT;
+		const cols = Math.ceil(Math.sqrt(plantCount * (baseW / baseH)));
 		const rows = Math.ceil(plantCount / cols);
+
+		const width = Math.max(baseW, cols * MIN_CELL + BED_PAD * 2);
+		const height = Math.max(baseH, rows * MIN_CELL + BED_PAD * 2);
 		const cellW = (width - BED_PAD * 2) / cols;
 		const cellH = (height - BED_PAD * 2) / rows;
 		return { cols, rows, width, height, cellW, cellH };
@@ -89,15 +120,16 @@
 			return { ...bed, x, y };
 		});
 
-		const totalW =
+		const bedsW =
 			colWidths.reduce((a, b) => a + b, 0) + BED_GAP * (colWidths.length - 1) + YARD_PAD * 2;
+		const totalW = Math.max(bedsW, 500);
 		const totalH =
 			rowHeights.reduce((a, b) => a + b, 0) +
 			(LABEL_HEIGHT + BED_GAP) * (rowHeights.length - 1) +
 			LABEL_HEIGHT +
 			YARD_PAD * 2;
 
-		return { beds: positioned, width: totalW, height: totalH + 50 };
+		return { beds: positioned, width: totalW, height: totalH + 90 };
 	}
 
 	let layout = $derived(computeBeds(groups));
@@ -107,6 +139,10 @@
 	}
 
 	const legendCategories: Category[] = ['fruits', 'veggies', 'herbs', 'flowers'];
+
+	let uniqueBedTypes = $derived(
+		[...new Set(groups.map((g) => g.container.type))]
+	);
 </script>
 
 <svg
@@ -129,60 +165,131 @@
 
 	{#each layout.beds as bed}
 		{@const style = bedStyle(bed.group.container.type)}
+		{@const circular = isCircularBed(bed.group)}
+		{@const individual = isIndividualContainers(bed.group)}
 
-		<!-- Bed shape -->
-		<rect
-			x={bed.x}
-			y={bed.y}
-			width={bed.layout.width}
-			height={bed.layout.height}
-			rx="6"
-			fill={style.fill}
-			fill-opacity="0.35"
-			stroke={style.stroke}
-			stroke-width={style.strokeWidth}
-			stroke-dasharray={style.dash}
-		/>
-
-		<!-- Plants inside bed -->
-		{#each bed.group.plants as plant, pi}
-			{@const col = pi % bed.layout.cols}
-			{@const row = Math.floor(pi / bed.layout.cols)}
-			{@const cx = bed.x + BED_PAD + col * bed.layout.cellW + bed.layout.cellW / 2}
-			{@const cy = bed.y + BED_PAD + row * bed.layout.cellH + bed.layout.cellH / 2}
-
-			<g>
-				<title>{plant.name} ({plant.category})</title>
+		{#if individual}
+			<!-- Individual containers (barrels, pots) - each plant gets its own circle -->
+			{@const containerR = 40}
+			{@const gap = 20}
+			{@const totalW = bed.group.plants.length * containerR * 2 + (bed.group.plants.length - 1) * gap}
+			{@const startX = bed.x + (bed.layout.width - totalW) / 2 + containerR}
+			{#each bed.group.plants as plant, pi}
+				{@const cx = startX + pi * (containerR * 2 + gap)}
+				{@const cy = bed.y + bed.layout.height / 2}
+				<!-- Container circle -->
 				<circle
 					{cx}
 					{cy}
-					r="20"
-					fill={CATEGORY_COLORS[plant.category]}
-					fill-opacity="0.9"
-					stroke="white"
-					stroke-width="2"
+					r={containerR}
+					fill={style.fill}
+					fill-opacity="0.35"
+					stroke={style.stroke}
+					stroke-width={style.strokeWidth}
+					stroke-dasharray={style.dash}
 				/>
-				<text
-					x={cx}
-					y={cy + 4}
-					text-anchor="middle"
-					fill="white"
-					font-size="8"
-					font-weight="600"
-				>
-					{truncate(plant.name, 9)}
-				</text>
-				<text
-					x={cx}
-					y={cy + 36}
-					text-anchor="middle"
-					fill="#333"
-					font-size="9"
-				>
-					{plant.name}
-				</text>
-			</g>
-		{/each}
+				<!-- Plant circle inside -->
+				<g>
+					<title>{plant.name} ({plant.category})</title>
+					<circle
+						{cx}
+						cy={cy - 6}
+						r="18"
+						fill={CATEGORY_COLORS[plant.category]}
+						fill-opacity="0.9"
+						stroke="white"
+						stroke-width="2"
+					/>
+					<text
+						x={cx}
+						y={cy - 2}
+						text-anchor="middle"
+						fill="white"
+						font-size="7"
+						font-weight="600"
+					>
+						{truncate(plant.name, 9)}
+					</text>
+					<text
+						x={cx}
+						y={cy + 20}
+						text-anchor="middle"
+						fill="#333"
+						font-size="8"
+					>
+						{truncate(plant.name, 12)}
+					</text>
+				</g>
+			{/each}
+		{:else}
+			<!-- Shared bed shape -->
+			{#if circular}
+				<circle
+					cx={bed.x + bed.layout.width / 2}
+					cy={bed.y + bed.layout.height / 2}
+					r={bed.layout.width / 2}
+					fill={style.fill}
+					fill-opacity="0.35"
+					stroke={style.stroke}
+					stroke-width={style.strokeWidth}
+					stroke-dasharray={style.dash}
+				/>
+			{:else}
+				<rect
+					x={bed.x}
+					y={bed.y}
+					width={bed.layout.width}
+					height={bed.layout.height}
+					rx="6"
+					fill={style.fill}
+					fill-opacity="0.35"
+					stroke={style.stroke}
+					stroke-width={style.strokeWidth}
+					stroke-dasharray={style.dash}
+				/>
+			{/if}
+
+			<!-- Plants inside shared bed -->
+			{@const plantR = Math.min(20, (bed.layout.cellW - 8) / 2, (bed.layout.cellH - 20) / 2)}
+			{#each bed.group.plants as plant, pi}
+				{@const col = pi % bed.layout.cols}
+				{@const row = Math.floor(pi / bed.layout.cols)}
+				{@const cx = bed.x + BED_PAD + col * bed.layout.cellW + bed.layout.cellW / 2}
+				{@const cy = bed.y + BED_PAD + row * bed.layout.cellH + bed.layout.cellH / 2 - 6}
+
+				<g>
+					<title>{plant.name} ({plant.category})</title>
+					<circle
+						{cx}
+						{cy}
+						r={plantR}
+						fill={CATEGORY_COLORS[plant.category]}
+						fill-opacity="0.9"
+						stroke="white"
+						stroke-width="2"
+					/>
+					<text
+						x={cx}
+						y={cy + 4}
+						text-anchor="middle"
+						fill="white"
+						font-size={Math.min(8, plantR * 0.45)}
+						font-weight="600"
+					>
+						{truncate(plant.name, 9)}
+					</text>
+					<text
+						x={cx}
+						y={cy + plantR + 12}
+						text-anchor="middle"
+						fill="#333"
+						font-size="8"
+					>
+						{truncate(plant.name, 12)}
+					</text>
+				</g>
+			{/each}
+		{/if}
 
 		<!-- Bed label -->
 		<text
@@ -206,22 +313,48 @@
 		</text>
 	{/each}
 
-	<!-- Legend -->
+	<!-- Plant category legend -->
+	<text x={YARD_PAD} y={layout.height - 68} font-size="10" font-weight="600" fill="#555">Plants:</text>
 	{#each legendCategories as cat, i}
 		<circle
-			cx={layout.width - 140 + i * 34}
-			cy={layout.height - 40}
+			cx={YARD_PAD + 50 + i * 70}
+			cy={layout.height - 70}
 			r="6"
 			fill={CATEGORY_COLORS[cat]}
 		/>
 		<text
-			x={layout.width - 140 + i * 34}
-			y={layout.height - 40 + 14}
-			text-anchor="middle"
-			font-size="7"
+			x={YARD_PAD + 60 + i * 70}
+			y={layout.height - 66}
+			font-size="9"
 			fill="#555"
 		>
 			{CATEGORY_LABELS[cat]}
+		</text>
+	{/each}
+
+	<!-- Bed type legend -->
+	<text x={YARD_PAD} y={layout.height - 38} font-size="10" font-weight="600" fill="#555">Beds:</text>
+	{#each uniqueBedTypes as bedType, i}
+		{@const style = bedStyle(bedType)}
+		<rect
+			x={YARD_PAD + 50 + i * 120}
+			y={layout.height - 46}
+			width="20"
+			height="12"
+			rx="2"
+			fill={style.fill}
+			fill-opacity="0.35"
+			stroke={style.stroke}
+			stroke-width={style.strokeWidth}
+			stroke-dasharray={style.dash}
+		/>
+		<text
+			x={YARD_PAD + 74 + i * 120}
+			y={layout.height - 36}
+			font-size="9"
+			fill="#555"
+		>
+			{bedType}
 		</text>
 	{/each}
 </svg>

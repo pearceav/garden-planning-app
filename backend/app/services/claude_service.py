@@ -72,11 +72,12 @@ Please provide your response as JSON with this exact structure:
 IMPORTANT RULES:
 - Create exactly 2 to 4 plant groups (beds). Combine plants into fewer, well-planned beds.
 - Mix flowers directly into other groups as companions. Do NOT create a flowers-only group unless the user selected ONLY flowers.
-- The "category" field for each plant must be one of: "fruits", "veggies", "herbs", "flowers".
+- The "category" field for each plant must be one of: "fruits", "veggies", "herbs", "flowers". Use the category from the seed list above — e.g., fennel is a veggie, not an herb.
 - Only use bed types from the available bed types listed above.
 - Beds must fit within the {preferences.yard_width}ft x {preferences.yard_depth}ft yard.
 - Group all selected plants into appropriate beds. Ensure every selected plant appears in exactly one group.
-- Only include plants from the selected seeds in the bloom_schedule."""
+- Only include plants from the selected seeds in the bloom_schedule.
+- Metal Raised Beds come in ONLY these sizes: "2ft x 2ft" (circular), "4ft x 2ft", or "6ft x 3ft". Do not invent other sizes for metal beds."""
 
 
 async def generate_garden_plan(

@@ -10,6 +10,7 @@ Type                    | Best For              | Pros                          
 ------------------------|-----------------------|-------------------------------------------|---------------------------------------------
 Wood Raised Bed         | Most veggies, herbs   | Affordable, easy to build, good drainage  | Rots over time (cedar/redwood last longer)
 Metal Raised Bed        | All plants            | Durable, modern look, no rot              | Can heat up in sun, more expensive
+  Available sizes: 2ft x 2ft (circular), 4ft x 2ft, 6ft x 3ft ONLY — do not use other sizes
 Stone/Brick Raised Bed  | Permanent gardens     | Very durable, retains heat                | Heavy, expensive, permanent
 
 == Containers ==

@@ -28,7 +28,6 @@ Plant                | Spacing              | Soil                              
 Bergamot             | 18-24 inches         | Fertile, well-drained, pH 6.0-6.7         | Full sun, afternoon shade in South   | Water when top inch dry, tolerates dry spells                | No
 Dill                 | 8 inches (20cm)      | Fertile, free-draining                    | Full sun, warm sheltered             | Regular in dry spells, prevent bolting                       | No (can grow tall)
 English Lavender     | 12-18 inches         | Poor to moderate, free-draining, alkaline | Full sun                             | Drought tolerant once established                            | No
-Fennel               | 12 inches (30cm)     | Light, free-draining                      | Full sun, warm sheltered             | Drought tolerant, water when young                           | Optional (cane in windy spots)
 Oregano              | 8-12 inches          | Well-drained, poor to moderate            | Full sun, warm                       | Drought tolerant, minimal watering                           | No
 Peppermint           | Container (spreads)  | Any soil type, multipurpose compost       | Full sun to partial shade            | Regular, especially in containers                            | No
 Purple Basil         | 4 inches (10cm)      | Free-draining                             | Full sun, warm sheltered             | Keep evenly moist, water in morning                          | No

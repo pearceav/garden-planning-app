@@ -7,6 +7,12 @@
 
 	let { group }: Props = $props();
 
+	function limitSentences(text: string, max: number): string {
+		const sentences = text.match(/[^.!?]+[.!?]+/g);
+		if (!sentences || sentences.length <= max) return text;
+		return sentences.slice(0, max).join('').trim();
+	}
+
 	const categoryColors: Record<Category, string> = {
 		fruits: 'var(--color-fruits)',
 		veggies: 'var(--color-veggies)',
@@ -33,12 +39,12 @@
 
 		<div class="reason">
 			<strong>Why they work together:</strong>
-			<p>{group.reason}</p>
+			<p>{limitSentences(group.reason, 3)}</p>
 		</div>
 
 		<div class="placement">
 			<strong>Placement:</strong>
-			<span>{group.placement}</span>
+			<span>{limitSentences(group.placement, 3)}</span>
 		</div>
 	</div>
 </div>

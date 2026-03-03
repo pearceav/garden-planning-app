@@ -14,12 +14,10 @@
 </script>
 
 <div class="garden-plan">
-	{#if onDelete}
-		<div class="new-plan-banner">
-			<span>Viewing a saved plan</span>
-			<button class="btn-new-plan" onclick={onStartOver}>New Plan</button>
-		</div>
-	{/if}
+	<div class="new-plan-banner">
+		<span>{onDelete ? 'Viewing a saved plan' : 'Your garden plan is ready'}</span>
+		<button class="btn-new-plan" onclick={onStartOver}>New Plan</button>
+	</div>
 
 	<section class="garden-visual">
 		<h2>Your Garden Layout</h2>
