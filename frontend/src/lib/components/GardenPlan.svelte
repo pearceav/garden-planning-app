@@ -7,12 +7,20 @@
 		plan: GardenPlan;
 		onSave: () => void;
 		onStartOver: () => void;
+		onDelete?: () => void;
 	}
 
-	let { plan, onSave, onStartOver }: Props = $props();
+	let { plan, onSave, onStartOver, onDelete }: Props = $props();
 </script>
 
 <div class="garden-plan">
+	{#if onDelete}
+		<div class="new-plan-banner">
+			<span>Viewing a saved plan</span>
+			<button class="btn-new-plan" onclick={onStartOver}>New Plan</button>
+		</div>
+	{/if}
+
 	<section class="garden-visual">
 		<h2>Your Garden Layout</h2>
 		<GardenLayoutSVG groups={plan.plant_groups} />
@@ -76,7 +84,12 @@
 
 	<div class="actions">
 		<button class="btn-secondary" onclick={onStartOver}>Start Over</button>
-		<button class="btn-primary" onclick={onSave}>Save Garden Plan</button>
+		<div class="actions-right">
+			{#if onDelete}
+				<button class="btn-danger" onclick={onDelete}>Delete Plan</button>
+			{/if}
+			<button class="btn-primary" onclick={onSave}>Save Garden Plan</button>
+		</div>
 	</div>
 </div>
 
@@ -189,5 +202,57 @@
 	.btn-secondary:hover {
 		border-color: var(--color-primary);
 		color: var(--color-primary);
+	}
+
+	.new-plan-banner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+		background: var(--color-primary-light);
+		border: 1px solid var(--color-primary);
+		border-radius: 8px;
+	}
+
+	.new-plan-banner span {
+		font-size: 0.9rem;
+		color: var(--color-primary-dark);
+		font-weight: 500;
+	}
+
+	.btn-new-plan {
+		padding: 0.5rem 1rem;
+		background: var(--color-primary);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.btn-new-plan:hover {
+		background: var(--color-primary-dark);
+	}
+
+	.actions-right {
+		display: flex;
+		gap: 0.75rem;
+	}
+
+	.btn-danger {
+		padding: 0.75rem 1.5rem;
+		border-radius: 8px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		background: white;
+		color: var(--color-error);
+		border: 2px solid var(--color-error);
+	}
+
+	.btn-danger:hover {
+		background: var(--color-error);
+		color: white;
 	}
 </style>

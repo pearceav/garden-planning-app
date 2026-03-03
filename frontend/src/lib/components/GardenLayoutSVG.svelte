@@ -21,8 +21,7 @@
 		flowers: 'Flowers'
 	};
 
-	const CELL_W = 90;
-	const CELL_H = 70;
+	const PX_PER_FT = 60;
 	const BED_PAD = 25;
 	const BED_GAP = 40;
 	const YARD_PAD = 30;
@@ -32,18 +31,30 @@
 		return type.toLowerCase().includes('wood');
 	}
 
-	function bedLayout(plantCount: number) {
-		const cols = Math.ceil(Math.sqrt(plantCount));
+	function parseSizeFt(size: string): { widthFt: number; heightFt: number } {
+		const match = size.match(/(\d+(?:\.\d+)?)\s*(?:ft)?\s*x\s*(\d+(?:\.\d+)?)\s*(?:ft)?/i);
+		if (match) {
+			return { widthFt: parseFloat(match[1]), heightFt: parseFloat(match[2]) };
+		}
+		return { widthFt: 3, heightFt: 3 };
+	}
+
+	function bedLayout(group: PlantGroup) {
+		const { widthFt, heightFt } = parseSizeFt(group.container.size);
+		const width = widthFt * PX_PER_FT;
+		const height = heightFt * PX_PER_FT;
+		const plantCount = group.plants.length;
+		const cols = Math.ceil(Math.sqrt(plantCount * (width / height)));
 		const rows = Math.ceil(plantCount / cols);
-		const width = cols * CELL_W + BED_PAD * 2;
-		const height = rows * CELL_H + BED_PAD * 2;
-		return { cols, rows, width, height };
+		const cellW = (width - BED_PAD * 2) / cols;
+		const cellH = (height - BED_PAD * 2) / rows;
+		return { cols, rows, width, height, cellW, cellH };
 	}
 
 	function computeBeds(groups: PlantGroup[]) {
 		const perRow = groups.length <= 2 ? groups.length : 2;
 		const beds = groups.map((g, i) => {
-			const layout = bedLayout(g.plants.length);
+			const layout = bedLayout(g);
 			const col = i % perRow;
 			const row = Math.floor(i / perRow);
 			return { group: g, layout, col, row };
@@ -126,8 +137,8 @@
 		{#each bed.group.plants as plant, pi}
 			{@const col = pi % bed.layout.cols}
 			{@const row = Math.floor(pi / bed.layout.cols)}
-			{@const cx = bed.x + BED_PAD + col * CELL_W + CELL_W / 2}
-			{@const cy = bed.y + BED_PAD + row * CELL_H + 22}
+			{@const cx = bed.x + BED_PAD + col * bed.layout.cellW + bed.layout.cellW / 2}
+			{@const cy = bed.y + BED_PAD + row * bed.layout.cellH + bed.layout.cellH / 2}
 
 			<g>
 				<title>{plant.name} ({plant.category})</title>

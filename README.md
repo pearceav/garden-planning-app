@@ -61,14 +61,28 @@ npm run dev
 | `/api/seeds` | GET | Returns seeds grouped by category |
 | `/api/garden/plan` | POST | Takes selected seeds + preferences, returns AI recommendations |
 
+## Features
+
+- **Seed Selection** — Browse seeds by category (fruits, veggies, herbs, flowers) and select what you want to grow
+- **Garden Preferences** — Set yard dimensions, sun exposure, and preferred bed types
+- **AI Garden Plans** — Claude generates companion planting groups with container recommendations and an SVG layout diagram with proportional bed dimensions
+- **Saved Gardens** — Save plans to localStorage; browse and load them from the sidebar, or delete them from the plan view
+- **Bloom Schedule** — See which plants bloom in spring, summer, and fall
+
 ## Documentation
 
 Detailed implementation plans live in the [docs/](docs/) folder:
 
 - [Backend Plan](docs/BACKEND-PLAN.md) — FastAPI architecture, endpoints, Claude prompt strategy, and data models
 - [Frontend Plan](docs/FRONTEND-PLAN.md) — SvelteKit components, stores, pages, and UI flow
+- [Sidebar Plan](docs/SIDEBAR-PLAN.md) — Saved gardens sidebar design
 
 ## Testing
 
 - **Backend:** `pytest tests/ -v`
 - **Frontend:** Vitest (unit), Playwright (e2e)
+
+
+## Future features
+
+ - make images look like they are from animal crossing 

@@ -90,7 +90,7 @@ async def generate_garden_plan(
     user_prompt = create_user_prompt(selected_seeds, plant_context, preferences)
 
     message = client.messages.create(
-        model="claude-sonnet-4-6-20250219",
+        model="claude-opus-4-6",
         max_tokens=4096,
         system=SYSTEM_PROMPT,
         messages=[

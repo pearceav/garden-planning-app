@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import Sidebar from '$lib/components/Sidebar.svelte';
 
 	let { children } = $props();
 </script>
@@ -14,9 +15,12 @@
 		<p>Select your seeds and get AI-powered planting recommendations</p>
 	</header>
 
-	<main>
-		{@render children()}
-	</main>
+	<div class="content-area">
+		<Sidebar />
+		<main>
+			{@render children()}
+		</main>
+	</div>
 
 	<footer>
 		<p>Built with Svelte + FastAPI + Claude</p>
@@ -47,12 +51,21 @@
 		opacity: 0.9;
 	}
 
+	.content-area {
+		display: flex;
+		flex: 1;
+	}
+
 	main {
 		flex: 1;
 		max-width: 1200px;
-		width: 100%;
-		margin: 0 auto;
 		padding: 2rem;
+	}
+
+	@media (max-width: 768px) {
+		.content-area {
+			flex-direction: column;
+		}
 	}
 
 	footer {

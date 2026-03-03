@@ -2,7 +2,7 @@
 tomato tiny tim
 tomato red cherry
 tomato beefsteak
-watermellon
+watermelon
 
 == Veggies ==
 bell pepper

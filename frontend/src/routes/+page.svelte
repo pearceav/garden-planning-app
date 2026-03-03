@@ -3,13 +3,14 @@
 	import GardenPlan from '$lib/components/GardenPlan.svelte';
 	import { generatePlan } from '$lib/api/client';
 	import { selectedList, clearSelection } from '$lib/stores/selectedSeeds';
-	import { gardenPlan, planLoading, planError, clearPlan } from '$lib/stores/gardenPlan';
+	import { gardenPlan, planLoading, planError, clearPlan, activeSavedGardenId } from '$lib/stores/gardenPlan';
 	import { savedGardens } from '$lib/stores/savedGardens';
 	import { gardenPreferences } from '$lib/stores/gardenPreferences';
 
 	async function handleGenerate() {
 		planLoading.set(true);
 		planError.set(null);
+		activeSavedGardenId.set(null);
 
 		try {
 			const plan = await generatePlan($selectedList, $gardenPreferences);
@@ -35,6 +36,15 @@
 		clearPlan();
 		clearSelection();
 	}
+
+	function handleDelete() {
+		if (!$activeSavedGardenId) return;
+		if (confirm('Delete this saved garden plan?')) {
+			savedGardens.delete($activeSavedGardenId);
+			clearPlan();
+			clearSelection();
+		}
+	}
 </script>
 
 <div class="page">
@@ -53,7 +63,12 @@
 			<button onclick={handleStartOver}>Try Again</button>
 		</div>
 	{:else if $gardenPlan}
-		<GardenPlan plan={$gardenPlan} onSave={handleSave} onStartOver={handleStartOver} />
+		<GardenPlan
+			plan={$gardenPlan}
+			onSave={handleSave}
+			onStartOver={handleStartOver}
+			onDelete={$activeSavedGardenId ? handleDelete : undefined}
+		/>
 	{:else}
 		<SeedSelector onGenerate={handleGenerate} />
 	{/if}
