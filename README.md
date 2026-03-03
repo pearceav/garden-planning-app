@@ -88,4 +88,4 @@ Detailed implementation plans live in the [docs/](docs/) folder:
 
 ## Future features
 
- - make images look like they are from animal crossing 
+ - make images look like stardew valley
