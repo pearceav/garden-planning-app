@@ -125,3 +125,5 @@ Detailed implementation plans live in the [docs/](docs/) folder:
 
  - make images look like stardew valley ( done)
  - make a hover over each garden bed and show the water needs
+ - graphics showing how many plants of each kind, and where exactly in the bed they are planted.
+ - do more intricate graphics based on a saved plan
