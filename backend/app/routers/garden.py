@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 
 from app.models.requests import GardenPlanRequest
 from app.models.responses import GardenPlanResponse
 from app.services.claude_service import generate_garden_plan
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/garden", tags=["garden"])
 
@@ -19,5 +23,8 @@ async def create_garden_plan(request: GardenPlanRequest):
     try:
         plan = await generate_garden_plan(request.selected_seeds, request.preferences)
         return plan
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate plan: {str(e)}")
+        logger.exception("Unexpected error generating garden plan")
+        raise HTTPException(status_code=500, detail="Something went wrong — try again")

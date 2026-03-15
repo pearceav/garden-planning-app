@@ -3,24 +3,20 @@ from pathlib import Path
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
 
 
+VALID_CATEGORIES = {"fruits", "veggies", "herbs", "flowers"}
+
+
 def load_seeds() -> dict[str, list[str]]:
     """Parse seeds.txt into category dict."""
-    seeds = {"fruits": [], "veggies": [], "herbs": [], "flowers": []}
+    seeds: dict[str, list[str]] = {cat: [] for cat in VALID_CATEGORIES}
     current_category = None
-
-    category_map = {
-        "fruits": "fruits",
-        "veggies": "veggies",
-        "herbs": "herbs",
-        "flowers": "flowers"
-    }
 
     with open(DATA_DIR / "seeds.txt") as f:
         for line in f:
             line = line.strip()
             if line.startswith("== "):
                 cat_name = line.strip("= ").strip().lower()
-                current_category = category_map.get(cat_name)
+                current_category = cat_name if cat_name in VALID_CATEGORIES else None
             elif line and current_category:
                 seeds[current_category].append(line)
 

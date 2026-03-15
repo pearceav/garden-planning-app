@@ -1,11 +1,15 @@
 import json
+import logging
+import re
 
-from anthropic import Anthropic
+from anthropic import Anthropic, APIError
 
 from app.config import get_settings
 from app.services.plant_data import get_plant_context
 from app.models.requests import GardenPreferences
 from app.models.responses import GardenPlanResponse
+
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are an expert gardener who specializes in companion planting and aesthetic garden design. You help users create beautiful, productive gardens by grouping plants that benefit each other and recommending appropriate containers.
 
@@ -18,7 +22,32 @@ Your recommendations should consider:
 6. Bloom times for continuous color throughout the season
 7. Mix flowers as companions directly into all beds for pest control, pollination, and beauty — never isolate flowers into their own separate group
 
-Always provide practical, actionable advice."""
+Always provide practical, actionable advice.
+Respond with raw JSON only — no markdown fences, no commentary."""
+
+
+def _get_client() -> Anthropic:
+    """Return a reusable Anthropic client."""
+    settings = get_settings()
+    return Anthropic(api_key=settings.anthropic_api_key)
+
+
+_client: Anthropic | None = None
+
+
+def get_client() -> Anthropic:
+    global _client
+    if _client is None:
+        _client = _get_client()
+    return _client
+
+
+def extract_json(text: str) -> str:
+    """Extract JSON from a response that may include markdown fences."""
+    fence_match = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
+    if fence_match:
+        return fence_match.group(1).strip()
+    return text.strip()
 
 
 def create_user_prompt(
@@ -92,26 +121,35 @@ async def generate_garden_plan(
     preferences: GardenPreferences,
 ) -> GardenPlanResponse:
     settings = get_settings()
-    client = Anthropic(api_key=settings.anthropic_api_key)
+    client = get_client()
 
     plant_context = get_plant_context()
     user_prompt = create_user_prompt(selected_seeds, plant_context, preferences)
 
-    message = client.messages.create(
-        model="claude-opus-4-6",
-        max_tokens=16384,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {"role": "user", "content": user_prompt}
-        ]
-    )
+    try:
+        message = client.messages.create(
+            model=settings.claude_model,
+            max_tokens=16384,
+            system=SYSTEM_PROMPT,
+            messages=[
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+    except APIError as e:
+        logger.error("Anthropic API error: %s", e)
+        raise RuntimeError(f"AI service error: {e.message}") from e
 
     response_text = message.content[0].text
+    json_text = extract_json(response_text)
 
-    if "```json" in response_text:
-        response_text = response_text.split("```json")[1].split("```")[0]
-    elif "```" in response_text:
-        response_text = response_text.split("```")[1].split("```")[0]
+    try:
+        plan_data = json.loads(json_text)
+    except json.JSONDecodeError as e:
+        logger.error("Failed to parse AI response as JSON: %s\nResponse: %s", e, response_text[:500])
+        raise RuntimeError("AI returned invalid JSON — try again") from e
 
-    plan_data = json.loads(response_text.strip())
-    return GardenPlanResponse(**plan_data)
+    try:
+        return GardenPlanResponse(**plan_data)
+    except Exception as e:
+        logger.error("AI response failed validation: %s\nData: %s", e, json.dumps(plan_data)[:500])
+        raise RuntimeError("AI response didn't match expected format — try again") from e
