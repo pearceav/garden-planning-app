@@ -14,6 +14,7 @@ export interface Container {
 export interface PlantInGroup {
 	name: string;
 	category: Category;
+	water_needs?: string;
 }
 
 export interface PlantGroup {

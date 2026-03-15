@@ -47,8 +47,8 @@ Please provide your response as JSON with this exact structure:
     {{
       "name": "Group name (e.g., 'Tomato & Basil Bed')",
       "plants": [
-        {{"name": "Plant 1", "category": "veggies"}},
-        {{"name": "Plant 2", "category": "herbs"}}
+        {{"name": "Plant 1", "category": "veggies", "water_needs": "1-2 inches per week"}},
+        {{"name": "Plant 2", "category": "herbs", "water_needs": "Drought tolerant"}}
       ],
       "container": {{
         "type": "One of the available bed types listed above",

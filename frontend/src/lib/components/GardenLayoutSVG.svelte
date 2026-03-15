@@ -139,6 +139,13 @@
 		return name.length > max ? name.slice(0, max - 1) + '\u2026' : name;
 	}
 
+	function waterTooltip(group: PlantGroup): string {
+		const lines = group.plants
+			.filter((p) => p.water_needs)
+			.map((p) => `${p.name}: ${p.water_needs}`);
+		return lines.length ? `Water Needs — ${group.name}\n${lines.join('\n')}` : group.name;
+	}
+
 	const legendCategories: Category[] = ['fruits', 'veggies', 'herbs', 'flowers'];
 
 	let uniqueBedTypes = $derived(
@@ -168,6 +175,8 @@
 		{@const style = bedStyle(bed.group.container.type)}
 		{@const circular = isCircularBed(bed.group)}
 		{@const individual = isIndividualContainers(bed.group)}
+		<g class="bed-group">
+		<title>{waterTooltip(bed.group)}</title>
 
 		{#if individual}
 			<!-- Individual containers (barrels, pots) - each plant gets its own circle -->
@@ -299,6 +308,7 @@
 		>
 			{bed.group.container.type} &mdash; {bed.group.container.size}
 		</text>
+		</g>
 	{/each}
 
 	<!-- Plant category legend -->
@@ -352,5 +362,8 @@
 		width: 100%;
 		height: auto;
 		border-radius: 12px;
+	}
+	.bed-group {
+		cursor: pointer;
 	}
 </style>

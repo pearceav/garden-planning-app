@@ -1,6 +1,6 @@
 import type { SeedsByCategory, GardenPlan, GardenPreferences } from '$lib/types';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 export async function fetchSeeds(): Promise<SeedsByCategory> {
 	const res = await fetch(`${API_BASE}/seeds`);

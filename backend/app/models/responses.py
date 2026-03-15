@@ -19,6 +19,7 @@ class Container(BaseModel):
 class PlantInGroup(BaseModel):
     name: str
     category: Literal["fruits", "veggies", "herbs", "flowers"]
+    water_needs: str = ""
 
 
 class PlantGroup(BaseModel):

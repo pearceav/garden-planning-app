@@ -8,7 +8,7 @@ function migratePlants(gardens: SavedGarden[]): SavedGarden[] {
 	for (const garden of gardens) {
 		for (const group of garden.plan.plant_groups) {
 			group.plants = group.plants.map((p: PlantInGroup | string) =>
-				typeof p === 'string' ? { name: p, category: 'veggies' as const } : p
+				typeof p === 'string' ? { name: p, category: 'veggies' as const, water_needs: '' } : { ...p, water_needs: p.water_needs ?? '' }
 			);
 		}
 	}
