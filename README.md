@@ -77,7 +77,7 @@ You need both servers running at the same time. Open two Git Bash terminals:
 
 | Terminal | Command | URL |
 |---|---|---|
-| 1 (Backend) | `cd backend && source venv/Scripts/activate && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | localhost:8000 |
+| 1 (Backend) | `cd backend && source venv/Scripts/activate && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --reload-include "*.txt"` | localhost:8000 |
 | 2 (Frontend) | `cd frontend && npm run dev` | localhost:5173 |
 
 > **Note:** On macOS/Linux, use `source venv/bin/activate` instead of `source venv/Scripts/activate`.
@@ -85,10 +85,10 @@ You need both servers running at the same time. Open two Git Bash terminals:
 ### Making changes
 
 - **Frontend:** Vite hot-reloads automatically — just save the file and the browser updates.
-- **Backend:** Uvicorn does **not** auto-reload by default. After editing Python files, stop the server (`Ctrl+C`) and restart it. Or start it with `--reload` to enable auto-reload during development:
+- **Backend:** Start with `--reload` and `--reload-include "*.txt"` so it auto-restarts when you edit Python files **or** data files (seeds.txt, plant-care.txt, boxes.txt):
 
 ```bash
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --reload-include "*.txt"
 ```
 
 ## API

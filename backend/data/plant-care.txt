@@ -11,7 +11,9 @@ Watermelon           | 3-5 feet             | Nutrient-rich, well-drained, pH 6.
 
 Plant                | Spacing              | Soil                                      | Sun                                  | Water                                                        | Trellis
 ---------------------|----------------------|-------------------------------------------|--------------------------------------|--------------------------------------------------------------|--------
+Beets                | 3-5 inches           | Loose, well-drained, pH 6.0-7.0           | Full sun, 6+ hours, tolerates shade  | 1 inch per week, keep consistently moist                     | No
 Bell Pepper          | 18-24 inches         | Well-drained, pH 6.2-7.0, add compost     | Full sun, 6-8 hours daily            | 1-2 inches per week, keep moist                              | Optional (stakes help with heavy fruit)
+Butternut Squash     | 3-6 feet (2ft if trellised) | Rich, well-drained, pH 6.0-6.5     | Full sun, 6+ hours daily             | 1-2 inches per week, water at base                           | Optional (needs fruit slings if vertical)
 Carrot               | 3-4 inches           | Loamy, loose, neutral pH                  | Full sun, tolerates partial shade    | 1-2 inches per week                                          | No
 Cowpea               | 3-4 inches           | Clay, loam, or sandy, pH 5.5-6.5          | Full sun, 6+ hours daily             | Moderate, avoid waterlogging                                 | Yes (climbing vine)
 Cucumber             | 36-60in (12in if trellised) | Warm, fertile, pH 6.0-6.8          | Full sun, abundant                   | 1 inch per week, keep consistently moist                     | Yes (recommended)

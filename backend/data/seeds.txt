@@ -18,6 +18,9 @@ string bean
 Celery
 Spinach
 Kale
+Luffa Gourd
+Butternut Squash
+Beets
 
 == Herbs ==
 bergamont

@@ -13,8 +13,8 @@ async def create_garden_plan(request: GardenPlanRequest):
     if not request.selected_seeds:
         raise HTTPException(status_code=400, detail="No seeds selected")
 
-    if len(request.selected_seeds) > 30:
-        raise HTTPException(status_code=400, detail="Maximum 30 seeds allowed")
+    if len(request.selected_seeds) > 200:
+        raise HTTPException(status_code=400, detail="Maximum 200 seeds allowed")
 
     try:
         plan = await generate_garden_plan(request.selected_seeds, request.preferences)
