@@ -70,15 +70,21 @@ Please provide your response as JSON with this exact structure:
 }}
 
 IMPORTANT RULES:
-- Create exactly 2 to 4 plant groups (beds). Combine plants into fewer, well-planned beds.
-- Every bed must include at least one herb and at least one flower as companions (for pest control, pollination, and beauty). Do NOT create herb-only or flower-only groups.
+- Every bed must include at least one herb and at least one flower as companions (for pest control, pollination, and beauty). Do NOT create herb-only or flower-only groups. The only exceptions are the fennel half barrel, the peppermint half barrel, and the watermelon in-ground plot.
 - The "category" field for each plant must be one of: "fruits", "veggies", "herbs", "flowers". Use the category from the seed list above — e.g., fennel is a veggie, not an herb.
 - Only use bed types from the available bed types listed above.
-- Beds must fit within the {preferences.yard_width}ft x {preferences.yard_depth}ft yard.
 - Group all selected plants into appropriate beds. Ensure every selected plant appears in exactly one group.
 - Only include plants from the selected seeds in the bloom_schedule.
 - Metal Raised Beds come in ONLY these sizes: "2ft x 2ft" (circular), "4ft x 2ft", or "6ft x 3ft". Do not invent other sizes for metal beds.
-- Fennel and peppermint are invasive spreaders — they MUST each be placed in their own individual Half Barrel, never in a shared raised bed with other plants."""
+
+DEFAULT GARDEN LAYOUT (always follow this layout):
+- The yard is 20ft x 26ft.
+- Place 3 Metal Raised Beds toward the north side of the yard.
+- Place 2 Wood Raised Beds toward the south side of the yard.
+- Place 1 Half Barrel with ONLY fennel in it.
+- Place 1 Half Barrel with ONLY peppermint in it.
+- If watermelon is selected, plant it in a Yard/Grass Plot (in-ground), not in a raised bed or container.
+- This gives a total of up to 8 plant groups (3 metal + 2 wood + 2 half barrels + 1 in-ground). Only include groups for plants that were actually selected — e.g., skip the fennel barrel if fennel is not selected, skip the watermelon plot if watermelon is not selected."""
 
 
 async def generate_garden_plan(

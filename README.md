@@ -26,6 +26,8 @@ garden-planning-app/
 
 ## Local Development
 
+Tested with **Git Bash on Windows 11**. Should also work in PowerShell or WSL with minor path adjustments.
+
 ### Prerequisites
 
 - Python 3.10+
@@ -34,10 +36,12 @@ garden-planning-app/
 
 ### 1. Backend
 
+Open a Git Bash terminal:
+
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
@@ -50,14 +54,14 @@ ANTHROPIC_API_KEY=your-api-key-here
 Start the server:
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
 The API will be running at [localhost:8000](http://localhost:8000). Interactive docs at [localhost:8000/docs](http://localhost:8000/docs).
 
 ### 2. Frontend
 
-In a separate terminal:
+Open a second Git Bash terminal:
 
 ```bash
 cd frontend
@@ -69,14 +73,23 @@ The app will be running at [localhost:5173](http://localhost:5173).
 
 ### Running both together
 
-You need both servers running at the same time. Open two terminals:
+You need both servers running at the same time. Open two Git Bash terminals:
 
 | Terminal | Command | URL |
 |---|---|---|
-| 1 (Backend) | `cd backend && venv/Scripts/activate && uvicorn app.main:app --host 0.0.0.0 --port 8000` | localhost:8000 |
+| 1 (Backend) | `cd backend && source venv/Scripts/activate && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | localhost:8000 |
 | 2 (Frontend) | `cd frontend && npm run dev` | localhost:5173 |
 
-> **Note:** On macOS/Linux, use `source venv/bin/activate` instead of `venv\Scripts\activate`.
+> **Note:** On macOS/Linux, use `source venv/bin/activate` instead of `source venv/Scripts/activate`.
+
+### Making changes
+
+- **Frontend:** Vite hot-reloads automatically — just save the file and the browser updates.
+- **Backend:** Uvicorn does **not** auto-reload by default. After editing Python files, stop the server (`Ctrl+C`) and restart it. Or start it with `--reload` to enable auto-reload during development:
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
 
 ## API
 
